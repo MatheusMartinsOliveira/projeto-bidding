@@ -1,0 +1,64 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.bidding.system.bidding.repository;
+
+import com.bidding.system.bidding.model.UserDTO;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import org.springframework.stereotype.Repository;
+
+/**
+ *
+ * @author farma
+ */
+@Repository
+public class UserRepository {
+    
+    public void register(UserDTO user) {
+        try {
+        Connection conn = Conexao.conectar();
+        PreparedStatement stmt = null;
+        
+        stmt = conn.prepareStatement("insert into usuarios (nome, email, senha, role) values (?, ?, ?, ?");
+        stmt.setString(1, user.getNome());
+        stmt.setString(2, user.getEmail());
+        stmt.setString(3, user.getSenha());
+        stmt.setString(4, user.getRole());
+        
+        int linhasAfetadas = stmt.executeUpdate();
+        if(linhasAfetadas == 0) {
+            throw new SQLException("Falha na atualização - Nenhuma linha foi atualizada");
+        }
+        }
+        catch(SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public UserDTO logar(String email, String senha) {
+        UserDTO user = new UserDTO();
+        try {
+            Connection conn = Conexao.conectar();
+            PreparedStatement stmt = null;
+            ResultSet rs = null;
+            
+            stmt = conn.prepareStatement("select * from usuarios where usuarios.email = ? and usuarios.senha = ?");
+            stmt.setString(1, email);
+            stmt.setString(2, senha);
+            
+            rs = stmt.executeQuery();
+            if(rs.next()) {
+                user.setIdUser(rs.getLong("id"));
+                user.setEmail(rs.getString("email"));
+                user.setNome(rs.getString("nome"));
+                user.setRole(rs.getString("role"));
+                
+            }
+        } catch(SQLException e) {
+            e.printStackTrace();
+    } return user; 
+}
+}
