@@ -9,7 +9,7 @@ package com.bidding.system.bidding.model;
  * @author farma
  */
 public class UserDTO {
-    private Long idUser;
+    private Long id;
     private String nome;
     private String email;
     private String senha;
@@ -18,20 +18,20 @@ public class UserDTO {
     public UserDTO() {
     }
 
-    public UserDTO(Long idUser, String nome, String email, String senha, String role) {
-        this.idUser = idUser;
+    public UserDTO(Long id, String nome, String email, String senha, String role) {
+        this.id = id;
         this.nome = nome;
         this.email = email;
         this.senha = senha;
         this.role = role;
     }
 
-    public Long getIdUser() {
-        return idUser;
+    public Long getId() {
+        return id;
     }
 
-    public void setIdUser(Long idUser) {
-        this.idUser = idUser;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -65,7 +65,6 @@ public class UserDTO {
     public void setRole(String role) {
         this.role = role;
     }
-    
-    
+
     
 }

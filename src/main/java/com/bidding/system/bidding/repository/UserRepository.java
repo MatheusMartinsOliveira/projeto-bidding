@@ -23,7 +23,7 @@ public class UserRepository {
         Connection conn = Conexao.conectar();
         PreparedStatement stmt = null;
         
-        stmt = conn.prepareStatement("insert into usuarios (nome, email, senha, role) values (?, ?, ?, ?");
+        stmt = conn.prepareStatement("INSERT INTO usuarios (nome, email, senha, role) VALUES (?, ?, ?, ?)");
         stmt.setString(1, user.getNome());
         stmt.setString(2, user.getEmail());
         stmt.setString(3, user.getSenha());
@@ -49,9 +49,12 @@ public class UserRepository {
             stmt.setString(1, email);
             stmt.setString(2, senha);
             
+            System.out.println(email);
+        System.out.println(senha);
+            
             rs = stmt.executeQuery();
             if(rs.next()) {
-                user.setIdUser(rs.getLong("id"));
+                user.setId(rs.getLong("id"));
                 user.setEmail(rs.getString("email"));
                 user.setNome(rs.getString("nome"));
                 user.setRole(rs.getString("role"));

@@ -6,6 +6,7 @@ package com.bidding.system.bidding.service;
 
 import com.bidding.system.bidding.model.UserDTO;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import static io.jsonwebtoken.Jwts.claims;
 import io.jsonwebtoken.io.Decoders;
@@ -32,12 +33,14 @@ public class TokenService {
     }
     
     public String gerarToken(UserDTO user) {
-        if((user.getIdUser() == 0 || user.getIdUser() == null || user.getNome().equals("") || user.getEmail().equals("") || user.getRole().equals(""))) {
+        if((user.getId() == 0 || user.getId() == null || user.getNome().equals("") || user.getEmail().equals("") || user.getRole().equals(""))) {
             throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Um ou mais campos faltantes");
         }
         return Jwts.builder()
                .subject(user.getNome())
-               .claim("usuario", user)
+               .claim("id", user.getId())
+               .claim("nome", user.getNome())
+               .claim("role", user.getRole())
                .issuedAt(new Date())
                .expiration(new Date(System.currentTimeMillis() + 3000000))
                .signWith(this.getKeySign())
@@ -46,7 +49,27 @@ public class TokenService {
     
     public UserDTO extrairClaims(String token) {
         Claims claims = Jwts.parser().verifyWith(this.getKeySign()).build().parseSignedClaims(token).getPayload();
-        UserDTO user = claims.get("usuario", UserDTO.class);
+        UserDTO user = new UserDTO();
+        user.setId(claims.get("id", Long.class));
+        user.setNome(claims.get("nome", String.class));
+        user.setRole(claims.get("role", String.class));
+        
         return user;
+    }
+    
+    public boolean validarToken(String token) {
+        try {
+            // Cria um parser JWT com a chave secreta para validação
+            Jwts.parser()
+                    .setSigningKey(getKeySign())
+                    .build()
+                    // Analisa e valida o token (lança exceção se inválido ou expirado)
+                    .parseClaimsJws(token);
+            // Se chegou aqui, o token é válido
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            // Se qualquer exceção ocorrer, o token é inválido ou expirou
+            return false;
+        }
     }
 }
