@@ -26,9 +26,11 @@ public class LanceRepository {
         Connection conn = Conexao.conectar();
         PreparedStatement stmt = null;
         
-        stmt = conn.prepareStatement("INSERT INTO lances (valor, data_lance) VALUES (?, ?)");
+        stmt = conn.prepareStatement("INSERT INTO lances (valor, data_lance, id_edital, id_uuario) VALUES (?, ?, ?,?)");
         stmt.setDouble(1, lance.getValor());
         stmt.setDate(2, lance.getDataLance());
+        stmt.setLong(3, lance.getIdEdital());
+        stmt.setLong(4, lance.getIdUsuario());
         
         return stmt.executeUpdate();
         } catch(SQLException e) {

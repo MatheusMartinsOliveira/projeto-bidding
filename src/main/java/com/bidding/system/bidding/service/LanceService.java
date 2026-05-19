@@ -7,6 +7,7 @@ package com.bidding.system.bidding.service;
 import com.bidding.system.bidding.model.EditalDTO;
 import com.bidding.system.bidding.model.LanceDTO;
 import com.bidding.system.bidding.model.UserDTO;
+import com.bidding.system.bidding.repository.EditalRepository;
 import com.bidding.system.bidding.repository.LanceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
@@ -24,6 +25,9 @@ public class LanceService {
     private TokenService tokenService;
     
     @Autowired
+    private EditalRepository editalRepository;
+    
+    @Autowired
     private LanceRepository lanceRepository;
     
     public void criarLance(Long id, LanceDTO lance, String token) {
@@ -32,6 +36,18 @@ public class LanceService {
             if(!usuarioLogado.getRole().equals("FORNECEDOR")) {
                 throw new ResponseStatusException(HttpStatusCode.valueOf(403), "Você precisa ser Fornecedor para criar um lance!");
             }
+            
+            EditalDTO edital = editalRepository.getById(id);
+            
+            if(!edital.getStatus().equals("ABERTO")){
+                throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Não é possível criar um lance para um edital vazio!");
+            }
+            
+            if(edital.getDataFechamento().before(lance.getDataLance())) {
+                throw new ResponseStatusException(HttpStatusCode.valueOf(400), "Data do lance posterior ao fechamento");
+            }
+            
+            lanceRepository.cadastrarLance(lance);
         } else {
             throw new ResponseStatusException(HttpStatusCode.valueOf(401), "Token inválido!");
         }
